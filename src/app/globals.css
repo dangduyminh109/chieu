@@ -1,0 +1,203 @@
+@import 'tailwindcss';
+@import '@fontsource/manrope/400.css';
+@import '@fontsource/manrope/500.css';
+@import '@fontsource/manrope/600.css';
+@import '@fontsource/manrope/700.css';
+@theme inline {
+  --color-background: #f6f8f6;
+  --color-foreground: #253b34;
+  --color-card: #ffffff;
+  --color-primary: #216149;
+  --color-primary-foreground: #ffffff;
+  --color-muted: #eaf1eb;
+  --color-muted-foreground: #5e7067;
+  --color-border: #dae3dc;
+  --color-destructive: #b42318;
+  --color-ring: #216149;
+  --color-accent: #e7bd67;
+  --font-sans: 'Manrope', sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+button,
+summary {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+a,
+button {
+  transition:
+    background-color 180ms cubic-bezier(0.32, 0.72, 0, 1),
+    color 180ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+:focus-visible {
+  outline: 3px solid var(--color-ring);
+  outline-offset: 3px;
+}
+input:not([type='checkbox']),
+select,
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #a6b9ad;
+  background: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font: inherit;
+  color: var(--color-foreground);
+}
+input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-primary);
+}
+label,
+.field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+label:has(input[type='checkbox']) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 500;
+}
+textarea {
+  min-height: 96px;
+}
+.sidebar {
+  display: none;
+}
+.app-header {
+  display: flex;
+  min-height: 96px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  background: white;
+  border-bottom: 1px solid var(--color-border);
+}
+.main-content {
+  max-width: 1440px;
+  margin: auto;
+  padding: 24px 16px 32px;
+}
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  gap: 4px;
+  border-top: 1px solid var(--color-border);
+  background: white;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+}
+.desktop-content {
+  padding-bottom: 96px;
+}
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  background: white;
+  padding: 12px;
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+.page-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.page-heading h1 {
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+}
+.page-heading p {
+  margin-top: 8px;
+  color: var(--color-muted-foreground);
+  font-size: 14px;
+}
+.weave {
+  background-color: #dce8da;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 12px, #c9d9c5 12px, #c9d9c5 16px),
+    repeating-linear-gradient(90deg, transparent, transparent 12px, #c0d3bb 12px, #c0d3bb 16px);
+  background-size: 32px 32px;
+}
+@media (min-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 30;
+    display: flex;
+    width: 264px;
+    flex-direction: column;
+    background: white;
+    border-right: 1px solid var(--color-border);
+    padding: 32px 24px;
+  }
+  .desktop-content {
+    margin-left: 264px;
+    padding-bottom: 0;
+  }
+  .mobile-nav {
+    display: none;
+  }
+  .main-content {
+    padding: 40px 40px 48px;
+  }
+  .app-header {
+    padding: 16px 40px;
+    min-height: 80px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
