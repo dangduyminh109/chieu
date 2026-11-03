@@ -31,8 +31,8 @@ Environment variables:
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Project publishable key, safe for the browser under RLS                              |
 | `NEXT_PUBLIC_APP_URL`                  | Canonical app URL for deployment configuration; also set Auth Site URL to this value |
 
-No service-role key is needed by the running app. Never add a service-role key to a
-`NEXT_PUBLIC_` variable. `.env.local` is ignored by Git.
+The server-only `SUPABASE_SECRET_KEY` is required for account provisioning and
+username login. Never add it to a `NEXT_PUBLIC_` variable. `.env.local` is ignored by Git.
 
 ## Set up Supabase
 
@@ -156,3 +156,28 @@ responses, or financial data. Offline submission and synchronization are not imp
 This is a production-oriented Phase 1 foundation, not a completed payroll,
 inventory, sales, or accounting product. Provision a real project and run the
 acceptance workflow before entering business data.
+
+## Authentication updates
+
+Password recovery: /forgot-password. Add /auth/callback to Supabase Auth redirect URLs alongside /auth/confirm. Set NEXT_PUBLIC_APP_URL to the actual application origin. Configure Supabase Auth rate limits and production SMTP. Inactive profiles cannot sign in; accounts without roles see a permission-denied screen.
+
+## Managed account provisioning
+
+Admins and owners create worker accounts directly from Members with an initial
+password and stage assignments. Apply migration 202611020003_provision_workers.sql
+and configure server-only SUPABASE_SECRET_KEY. This supersedes the earlier
+dashboard-only invitation limitation. Only ADMIN can subsequently assign privileged
+roles. Keep hosted Supabase public signup disabled. Never commit the secret key.
+
+## Backend business modules
+
+Production review/resubmission/locking, allocated wage payments, customer/supplier
+and material catalogs, effective retail/wholesale/purchase prices, material
+purchases/issues, finished receipts/purchases, sales, operating expenses, document
+payments, stock/debt/wage balances and financial summaries are implemented as
+Server Actions and protected SQL RPCs. See [Backend API](docs/BACKEND_API.md) for
+contracts and examples. The UI has not been extended for these modules. This
+supersedes the initial Phase 1-only roadmap descriptions; advanced accounting,
+refund/reversal workflows, exports and backup automation remain outside this API.
+New backend migrations 006–009 are deployed. Checks have not been run for this
+backend expansion at the user's request.

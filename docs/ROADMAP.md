@@ -1,5 +1,25 @@
 # Roadmap
 
+Manual cost update: owners can enter per-type unit costs, sales snapshot those
+costs, and `/profit` reports revenue, COGS and margin with missing-cost warnings.
+This is the owner-selected reference-cost method, not automated material-cost
+allocation. See MANUAL_COST_PROFIT.md.
+
+Current UI update (2026-11-03): manager purchase/sale history and balances,
+partial/deferred payments and debt settlements, customer/supplier management,
+and raw-material stock/purchase/issue/history pages are now implemented.
+See TRADING_MATERIALS_UI.md. New UI/backend changes have not been tested at the
+user's request. Excel export and PWA installation work are deferred by the user.
+The older phase descriptions below are historical and do not describe current
+UI completion.
+
+Backend update: production review/payroll and core Phase 3 business operations are
+implemented in migrations 006–009 and feature Server Actions. Their UI remains
+unimplemented. See BACKEND_API.md for the current contract. The phase lists below
+retain the original delivery plan; do not interpret them as the current backend
+implementation status. Advanced accounting, reversals/refunds, exports and backup
+automation remain future work.
+
 ## Phase 1 implemented
 
 Next.js/React/TypeScript/pnpm foundation, Tailwind/shadcn-compatible primitives,

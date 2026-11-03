@@ -13,6 +13,10 @@ const config: NextConfig = {
         ],
       },
       {
+        source: '/refresh.html',
+        headers: [{ key: 'Cache-Control', value: 'no-store' }],
+      },
+      {
         source: '/sw.js',
         headers: [
           { key: 'Cache-Control', value: 'no-store' },

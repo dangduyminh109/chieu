@@ -1,5 +1,18 @@
 # Business rules and explicit Phase 1 assumptions
 
+## Current catalog pricing
+
+The mat form manages default selling price and labor rates in one transaction.
+Weaving is mat-specific; sewing, cutting and tying use shared stage prices. The
+three requested seed mats sell at 100,000 VND. Weaving is 10,000 for checkerboard
+mats and 8,000 for white and tra-nien mats. Sewing/cutting are 1,000 per mat;
+tying is 500 per mat (1,000 per two mats). Seed prices require an ADMIN profile.
+Selling prices are suggestions and can be overridden on the actual transaction.
+Only ADMIN/OWNER may manually change an unpaid, unlocked work rate with a reason.
+Workers cannot choose their own wages. Changing defaults never reprices saved
+transactions. Multiple effective-date revisions on one day are resolved by latest
+creation time and ID. Confirmed wage receipts also prevent rate changes.
+
 1. Quantity is a positive integer, maximum 1,000,000 per entry. VND unit rates are
    integers between zero and 1,000,000,000. Total is quantity multiplied by the
    saved rate, generated in PostgreSQL, not trusted from the form.
@@ -44,3 +57,37 @@
 Financial assumptions above are documented rather than hidden in presentation.
 Confirm the worker-rate precedence, backdate policy and submission/review process
 with the workshop before production rollout.
+
+## Current deletion policy
+
+Deletion features are disabled. Keep business records and use inactive status where
+provided. This supersedes the earlier unused-mat deletion rule. The legacy delete
+action returns a safe message; migration 004 disables and revokes the database RPC.
+Membership reconciliation may still replace role/skill associations transactionally;
+this is permission maintenance, not a record-deletion feature.
+
+## Backend expansion (supersedes Phase 1-only restrictions above)
+
+Managers can now approve/reject/lock submitted work; rejected work may be corrected
+and resubmitted by its worker. Approved snapshots are immutable. Payments allocate
+approved wages exactly and unpaid balance subtracts allocations. Core purchases,
+explicit finished receipts, sales, operating expenses and payments are implemented
+in the backend. No UI for these operations has been added. See BACKEND_API.md for
+stock locking, historical stock validation, price override and report semantics.
+
+## Immediate recording policy
+
+Migration 013 supersedes the approval queue: submitted/new work is recorded as
+APPROVED immediately and contributes to wages without manager review. Existing
+SUBMITTED records are converted without repricing. APPROVED is an internal status;
+UI labels it Đã ghi nhận. Payments remain separate and allocated explicitly.
+
+## Stage-specific mat classification
+
+Only WEAVING requires a mat type. Multiple weaving entries on one date can use
+different mats and independent rates. Other stages (including TYING, SEWING and
+CUTTING) use a null mat reference and stage-wide labor rates; skills and worker
+overrides remain independent. Historical mat-specific work snapshots are retained.
+Only unambiguous legacy nonweaving prices are copied to stage-wide price history;
+conflicting values require explicit manager configuration. New daily entries do
+not require a mat catalog for nonweaving stages.

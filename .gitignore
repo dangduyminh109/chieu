@@ -7,3 +7,7 @@ coverage/
 *.tsbuildinfo
 graft/
 test-results/
+.open-next/
+.wrangler/
+.dev.vars*
+.vercel/

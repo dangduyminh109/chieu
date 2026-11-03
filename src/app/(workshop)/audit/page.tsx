@@ -3,9 +3,12 @@ import { requireSession } from '@/lib/auth/session';
 import { can } from '@/lib/permissions';
 import { createClient } from '@/lib/supabase/server';
 import { displayDate } from '@/lib/utils';
+import { ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Denied, EmptyState } from '@/components/ui/states';
+import { PageHeader } from '@/components/ui/page-header';
 import type { AuditEvent } from '@/types/domain';
+
 const entityLabels: Record<string, string> = {
   profiles: 'Hồ sơ',
   user_roles: 'Vai trò',
@@ -19,7 +22,9 @@ const actionLabels: Record<string, string> = {
   UPDATE: 'Cập nhật',
   DELETE: 'Xóa',
 };
+
 export const metadata = { title: 'Nhật ký hệ thống' };
+
 export default async function AuditPage({
   searchParams,
 }: {
@@ -37,14 +42,14 @@ export default async function AuditPage({
     .order('id')
     .range((page - 1) * 30, page * 30 - 1);
   if (result.error) throw new Error('AUDIT_QUERY_FAILED');
+
   return (
-    <>
-      <div className="page-heading">
-        <div>
-          <h1>Nhật ký hệ thống</h1>
-          <p>Lịch sử thay đổi được ghi cùng giao dịch. Chỉ quản trị viên được xem.</p>
-        </div>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Nhật ký hệ thống"
+        description="Lịch sử thay đổi được ghi cùng giao dịch. Chỉ quản trị viên được xem."
+        icon={ShieldCheck}
+      />
       <Card>
         {result.data.length === 0 ? (
           <EmptyState
@@ -55,7 +60,7 @@ export default async function AuditPage({
           <div className="divide-y divide-border">
             {(result.data as AuditEvent[]).map((event) => (
               <details key={event.id} className="py-4">
-                <summary className="min-h-12">
+                <summary className="min-h-12 cursor-pointer">
                   <strong className="text-sm">
                     {actionLabels[event.action] ?? 'Thay đổi'} ·{' '}
                     {entityLabels[event.entity_name] ?? 'Dữ liệu'}
@@ -77,11 +82,11 @@ export default async function AuditPage({
                     Mã dữ liệu: {event.entity_id}
                   </p>
                   <h3 className="font-semibold">Trước thay đổi</h3>
-                  <pre className="max-h-64 overflow-auto rounded-xl bg-muted p-4 text-xs">
+                  <pre className="max-h-64 overflow-x-auto whitespace-pre-wrap break-all rounded-xl bg-muted p-4 text-xs">
                     {JSON.stringify(event.previous_values, null, 2) ?? 'Không có'}
                   </pre>
                   <h3 className="font-semibold">Sau thay đổi</h3>
-                  <pre className="max-h-64 overflow-auto rounded-xl bg-muted p-4 text-xs">
+                  <pre className="max-h-64 overflow-x-auto whitespace-pre-wrap break-all rounded-xl bg-muted p-4 text-xs">
                     {JSON.stringify(event.new_values, null, 2) ?? 'Không có'}
                   </pre>
                 </div>
@@ -90,21 +95,21 @@ export default async function AuditPage({
           </div>
         )}
         <div className="mt-6 flex items-center justify-between text-sm">
-          <span>Trang {page}</span>
-          <div className="flex gap-4">
+          <span className="text-muted-foreground">Trang {page}</span>
+          <div className="flex gap-3">
             {page > 1 && (
-              <Link className="p-3 underline" href={`/audit?page=${page - 1}`}>
+              <Link className="btn btn-outline btn-sm" href={`/audit?page=${page - 1}`}>
                 Trang trước
               </Link>
             )}
             {page * 30 < (result.count ?? 0) && (
-              <Link className="p-3 underline" href={`/audit?page=${page + 1}`}>
+              <Link className="btn btn-outline btn-sm" href={`/audit?page=${page + 1}`}>
                 Trang sau
               </Link>
             )}
           </div>
         </div>
       </Card>
-    </>
+    </div>
   );
 }

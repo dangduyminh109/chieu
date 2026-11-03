@@ -1,4 +1,13 @@
+import { LaborScopeFields } from '@/features/pricing/labor-scope-fields';
+import { WorkerSelect } from '@/components/ui/worker-select';
+import { Avatar } from '@/components/ui/avatar';
+import { DatePicker } from '@/components/ui/date-picker';
+import { Dialog } from '@/components/ui/dialog';
+import { DataTable } from '@/components/ui/data-table';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Coins, Layers, Users } from 'lucide-react';
+import { matImageUrl } from '@/features/mat-types/image-url';
 import { requireSession } from '@/lib/auth/session';
 import { can } from '@/lib/permissions';
 import { createClient } from '@/lib/supabase/server';
@@ -7,145 +16,172 @@ import { addRate } from '@/features/pricing/actions';
 import { businessDate, displayDate, money } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { ActionForm } from '@/components/ui/action-form';
+import { Field } from '@/components/ui/field';
 import { Denied, EmptyState } from '@/components/ui/states';
+import { PageHeader } from '@/components/ui/page-header';
+
 export const metadata = { title: 'Đơn giá công' };
+
 export default async function PricingPage() {
   const session = await requireSession();
   if (!can(session.roles, 'manage_catalog')) return <Denied />;
   const [{ mats, stages }, rates] = await Promise.all([getCatalog(), getRates()]);
   const db = await createClient();
-  const people = await db.from('profiles').select('id,full_name').eq('active', true);
+  const people = await db.from('profiles').select('id,full_name,avatar_path').eq('active', true);
   if (people.error) throw new Error('PROFILE_QUERY_FAILED');
-  return (
-    <>
-      <div className="page-heading">
-        <div>
-          <h1>Đơn giá công</h1>
-          <p>Áp dụng theo ngày làm việc, giữ nguyên công đã ghi nhận.</p>
-        </div>
-      </div>
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(300px,0.8fr)_minmax(0,1.2fr)]">
-        <Card>
-          <h2 className="mb-6 text-xl font-semibold">Thêm mốc đơn giá</h2>
-          {mats.some((m) => m.active) ? (
-            <ActionForm action={addRate} submitLabel="Lưu đơn giá mới">
-              <div>
-                <label htmlFor="mat">Loại chiếu</label>
-                <select id="mat" name="mat_type_id" required>
-                  {mats
-                    .filter((m) => m.active)
-                    .map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="stage">Công đoạn</label>
-                <select id="stage" name="stage_id" required>
-                  {stages
-                    .filter((s) => s.active)
-                    .map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="worker">Áp dụng cho</label>
-                <select id="worker" name="worker_id">
-                  <option value="">Đơn giá chung</option>
-                  {people.data.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.full_name}
-                    </option>
-                  ))}
-                </select>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Đơn giá riêng của thợ được ưu tiên hơn đơn giá chung.
-                </p>
-              </div>
-              <div>
-                <label htmlFor="effective">Có hiệu lực từ ngày</label>
-                <input
-                  id="effective"
-                  name="effective_from"
-                  type="date"
-                  required
-                  defaultValue={businessDate()}
-                  min="2000-01-01"
-                  max="2100-12-31"
-                />
-              </div>
-              <div>
-                <label htmlFor="unit_rate">Đơn giá mỗi chiếu (đồng)</label>
-                <input
-                  id="unit_rate"
-                  name="unit_rate"
-                  type="number"
-                  inputMode="numeric"
-                  min={0}
-                  max={1000000000}
-                  step={1}
-                  required
-                />
-              </div>
-              <p className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
-                Mỗi mốc được lưu vào lịch sử. Để đổi giá, thêm mốc ngày mới. Công cũ sẽ không tự
-                thay đổi.
-              </p>
-            </ActionForm>
-          ) : (
-            <EmptyState
-              title="Cần thêm loại chiếu trước"
-              description="Tạo danh mục trước khi thiết lập đơn giá."
-            >
-              <Link className="text-primary underline" href="/mat-types">
-                Đến loại chiếu
-              </Link>
-            </EmptyState>
-          )}
-        </Card>
-        <Card>
-          <h2 className="text-xl font-semibold">Lịch sử đơn giá</h2>
-          {rates.length === 0 ? (
-            <EmptyState
-              title="Chưa thiết lập đơn giá"
-              description="Thêm đơn giá đầu tiên để thợ bắt đầu ghi công."
+
+  const addDialog = (
+    <Dialog title="Thêm mốc đơn giá" trigger="Thêm đơn giá">
+      {stages.some((s) => s.active) ? (
+        <ActionForm action={addRate} submitLabel="Lưu đơn giá mới">
+          <LaborScopeFields
+            mats={mats.filter((m) => m.active)}
+            stages={stages.filter((s) => s.active)}
+          />
+          <Field
+            id="worker"
+            label="Áp dụng cho"
+            hint="Đơn giá riêng của thợ được ưu tiên hơn đơn giá chung."
+          >
+            <WorkerSelect
+              id="worker"
+              name="worker_id"
+              workers={people.data.map((p) => ({
+                id: p.id,
+                name: p.full_name,
+                avatar_path: p.avatar_path,
+              }))}
+              allLabel="Đơn giá chung (tất cả thợ)"
             />
-          ) : (
-            <div className="mt-6 divide-y divide-border">
-              {rates.map((r) => (
-                <article key={r.id} className="flex flex-wrap justify-between gap-4 py-4">
-                  <div>
-                    <h3 className="font-semibold">
-                      {mats.find((m) => m.id === r.mat_type_id)?.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {stages.find((s) => s.id === r.stage_id)?.name} ·{' '}
-                      {r.worker_id
-                        ? (people.data.find((p) => p.id === r.worker_id)?.full_name ??
-                          'Thợ đã ngừng hoạt động')
-                        : 'Đơn giá chung'}
-                    </p>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Từ {displayDate(r.effective_from)}
-                    </p>
+          </Field>
+          <Field id="effective" label="Có hiệu lực từ ngày">
+            <DatePicker
+              id="effective"
+              name="effective_from"
+              required
+              defaultValue={businessDate()}
+              min="2000-01-01"
+              max="2100-12-31"
+            />
+          </Field>
+          <Field id="unit_rate" label="Đơn giá mỗi chiếu (đồng)">
+            <input
+              id="unit_rate"
+              name="unit_rate"
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={1000000000}
+              step={1}
+              required
+              placeholder="VD: 15000"
+            />
+          </Field>
+          <p className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">
+            Mỗi mốc được lưu vào lịch sử. Để đổi giá, thêm mốc ngày mới. Công cũ sẽ không tự
+            thay đổi.
+          </p>
+        </ActionForm>
+      ) : (
+        <EmptyState
+          title="Cần thêm loại chiếu trước"
+          description="Tạo danh mục trước khi thiết lập đơn giá."
+        >
+          <Link className="text-primary underline" href="/mat-types">
+            Đến loại chiếu
+          </Link>
+        </EmptyState>
+      )}
+    </Dialog>
+  );
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Đơn giá công"
+        description="Đơn giá theo công đoạn và loại chiếu, có hiệu lực theo ngày."
+        icon={Coins}
+        action={addDialog}
+      />
+      <Card>
+        <h2 className="text-lg font-bold text-foreground">Lịch sử đơn giá</h2>
+        <DataTable
+          caption="Lịch sử đơn giá"
+          rows={rates}
+          rowKey={(r) => r.id}
+          emptyMessage="Chưa thiết lập đơn giá."
+          columns={[
+            {
+              key: 'mat',
+              header: 'Loại chiếu',
+              cell: (r) => {
+                const mat = r.mat_type_id ? mats.find((m) => m.id === r.mat_type_id) : null;
+                if (!mat) return <span className="text-muted-foreground">Không phân loại</span>;
+                return (
+                  <div className="flex items-center gap-2">
+                    {mat.image_path ? (
+                      <Image
+                        src={matImageUrl(mat.image_path)!}
+                        alt={mat.name}
+                        width={28}
+                        height={28}
+                        unoptimized
+                        className="size-7 rounded-lg border border-border/80 object-cover shrink-0 shadow-2xs"
+                      />
+                    ) : (
+                      <div className="size-7 rounded-lg border border-border/60 bg-muted/60 flex items-center justify-center shrink-0 text-muted-foreground/50">
+                        <Layers size={13} />
+                      </div>
+                    )}
+                    <span className="font-semibold text-foreground">{mat.name}</span>
                   </div>
-                  <strong className="text-primary">
-                    {money(r.unit_rate)}
-                    <span className="block text-right text-xs font-normal text-muted-foreground">
-                      mỗi chiếu
+                );
+              },
+            },
+            {
+              key: 'stage',
+              header: 'Công đoạn',
+              cell: (r) => stages.find((s) => s.id === r.stage_id)?.name,
+            },
+            {
+              key: 'worker',
+              header: 'Áp dụng cho',
+              cell: (r) => {
+                if (!r.worker_id) {
+                  return (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+                      <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Users size={11} />
+                      </div>
+                      <span>Đơn giá chung</span>
+                    </div>
+                  );
+                }
+                const person = people.data.find((p) => p.id === r.worker_id);
+                return (
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <Avatar
+                      path={person?.avatar_path}
+                      name={person?.full_name ?? 'Thợ'}
+                      className="size-5 text-[9px] shrink-0 ring-1 ring-border"
+                    />
+                    <span className="font-medium text-foreground">
+                      {person?.full_name ?? 'Thợ đã ngừng hoạt động'}
                     </span>
-                  </strong>
-                </article>
-              ))}
-            </div>
-          )}
-        </Card>
-      </div>
-    </>
+                  </div>
+                );
+              },
+            },
+            { key: 'date', header: 'Có hiệu lực từ', cell: (r) => displayDate(r.effective_from) },
+            {
+              key: 'price',
+              header: 'Đơn giá mỗi chiếu',
+              className: 'text-right',
+              cell: (r) => money(r.unit_rate),
+            },
+          ]}
+        />
+      </Card>
+    </div>
   );
 }

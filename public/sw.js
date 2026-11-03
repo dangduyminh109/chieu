@@ -1,10 +1,10 @@
 /* Static-only caching. No HTML, RSC, Auth, API, or private financial responses are stored. */
-const CACHE = 'xuong-chieu-static-v1';
+const CACHE = 'xuong-chieu-static-v4';
 const SAFE = [
   '/offline.html',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/maskable-512.png',
+  '/icons/chieu-192.png',
+  '/icons/chieu-512.png',
+  '/icons/chieu-maskable-512.png',
 ];
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SAFE)));
@@ -31,8 +31,8 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(fetch(event.request).catch(() => caches.match('/offline.html')));
     return;
   }
-  if (url.search || (!SAFE.includes(url.pathname) && !url.pathname.startsWith('/_next/static/')))
-    return;
+  // Never intercept framework chunks: dev/HMR chunks are not immutable across restarts.
+  if (url.search || !SAFE.includes(url.pathname)) return;
   event.respondWith(
     caches.match(event.request).then(
       (cached) =>

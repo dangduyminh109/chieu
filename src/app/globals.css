@@ -3,30 +3,170 @@
 @import '@fontsource/manrope/500.css';
 @import '@fontsource/manrope/600.css';
 @import '@fontsource/manrope/700.css';
+/* ─────────────────────────────────────────────────────────────
+   Design tokens – mapped onto Tailwind's color system
+   ───────────────────────────────────────────────────────────── */
 @theme inline {
-  --color-background: #f6f8f6;
-  --color-foreground: #253b34;
-  --color-card: #ffffff;
-  --color-primary: #216149;
-  --color-primary-foreground: #ffffff;
-  --color-muted: #eaf1eb;
-  --color-muted-foreground: #5e7067;
-  --color-border: #dae3dc;
-  --color-destructive: #b42318;
-  --color-ring: #216149;
-  --color-accent: #e7bd67;
   --font-sans: 'Manrope', sans-serif;
+  /* Semantic aliases that Tailwind utilities read from */
+  --color-background: var(--bg);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--surface);
+  --color-primary: var(--craft-green);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--craft-gold);
+  --color-secondary-foreground: #ffffff;
+  --color-muted: var(--craft-green-soft);
+  --color-muted-foreground: var(--text-secondary);
+  --color-border: var(--border-warm);
+  --color-destructive: var(--craft-red);
+  --color-ring: var(--craft-green);
+  --color-accent: var(--craft-gold);
+  /* Raw craft palette – usable via bg-craft-green, text-craft-gold, etc. */
+  --color-craft-green: var(--craft-green);
+  --color-craft-green-hover: var(--craft-green-hover);
+  --color-craft-green-soft: var(--craft-green-soft);
+  --color-craft-gold: var(--craft-gold);
+  --color-craft-gold-text: var(--craft-gold-text);
+  --color-craft-gold-soft: var(--craft-gold-soft);
+  --color-craft-red: var(--craft-red);
+  --color-craft-red-text: var(--craft-red-text);
+  --color-craft-red-soft: var(--craft-red-soft);
+  --color-craft-purple: var(--craft-purple);
+  --color-craft-purple-text: var(--craft-purple-text);
+  --color-craft-purple-soft: var(--craft-purple-soft);
+  --color-surface: var(--surface);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-warm: var(--border-warm);
 }
+/* ─────────────────────────────────────────────────────────────
+   LIGHT THEME (default)
+   ───────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+  /* Four traditional mat-dye colours */
+  --craft-green: #245b48;
+  --craft-green-hover: #1b4637;
+  --craft-green-soft: #eaf2ef;
+  --craft-gold: #c8963e;
+  --craft-gold-text: #8f651e;
+  --craft-gold-soft: #fbf5e8;
+  --craft-gold-border: #e6d3a7;
+  --craft-red: #a4473f;
+  --craft-red-text: #8c2d25;
+  --craft-red-soft: #fdf3f2;
+  --craft-purple: #6d466b;
+  --craft-purple-text: #4f304d;
+  --craft-purple-soft: #f5eff5;
+  /* Neutrals */
+  --bg: #f8f6f0;
+  --surface: #ffffff;
+  --text-primary: #26332b;
+  --text-secondary: #4a5a50;
+  --border-warm: #cfcbc0;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.35);
+
+  /* Standard aliases */
+  --primary: var(--craft-green);
+  --primary-foreground: #ffffff;
+  --card: var(--surface);
+  --border: var(--border-warm);
+  --foreground: var(--text-primary);
+  --muted: var(--craft-green-soft);
+  --muted-foreground: var(--text-secondary);
+}
+/* ─────────────────────────────────────────────────────────────
+   DARK THEME  (.dark on <html>)
+   ───────────────────────────────────────────────────────────── */
+.dark {
+  color-scheme: dark;
+  /* Craft colours stay recognisable but lightened for dark surfaces */
+  --craft-green: #4db88c; /* lighter emerald – readable on dark */
+  --craft-green-hover: #5fcfa0;
+  --craft-green-soft: #0f2920; /* very dark tint as muted bg */
+  --craft-gold: #e0a94a;
+  --craft-gold-text: #f0c06a;
+  --craft-gold-soft: #2a1e07;
+  --craft-gold-border: #5a3f10;
+  --craft-red: #d9736b;
+  --craft-red-text: #f0948d;
+  --craft-red-soft: #2d0c0a;
+  --craft-purple: #b589b3;
+  --craft-purple-text: #d4aed2;
+  --craft-purple-soft: #1e0f1d;
+  /* Neutrals – deep warm-tinted dark background */
+  --bg: #131a16;
+  --surface: #1e2921;
+  --text-primary: #e8ede9;
+  --text-secondary: #8fa898;
+  --border-warm: #2e3d34;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.22);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.38);
+
+  /* Standard aliases */
+  --primary: var(--craft-green);
+  --primary-foreground: #ffffff;
+  --card: var(--surface);
+  --border: var(--border-warm);
+  --foreground: var(--text-primary);
+  --muted: var(--craft-green-soft);
+  --muted-foreground: var(--text-secondary);
+}
+/* ─────────────────────────────────────────────────────────────
+   BASE RESET & GLOBAL STYLES
+   ───────────────────────────────────────────────────────────── */
 * {
   box-sizing: border-box;
 }
+/* ─────────────────────────────────────────────────────────────
+   GLOBAL MODERN SCROLLBAR
+   ───────────────────────────────────────────────────────────── */
+html,
+body,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+html,
+body {
+  max-width: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 150ms ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 body {
   margin: 0;
-  background: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--bg);
+  color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.5;
+  transition:
+    background-color 220ms ease,
+    color 220ms ease;
 }
 h1,
 h2,
@@ -46,6 +186,14 @@ textarea {
 button,
 summary {
   cursor: pointer;
+  list-style: none !important;
+}
+summary::-webkit-details-marker {
+  display: none !important;
+}
+summary::marker {
+  display: none !important;
+  content: '' !important;
 }
 button:disabled {
   cursor: not-allowed;
@@ -57,26 +205,39 @@ button {
     color 180ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 :focus-visible {
-  outline: 3px solid var(--color-ring);
+  outline: 3px solid var(--craft-green);
   outline-offset: 3px;
 }
-input:not([type='checkbox']),
+/* ─────────────────────────────────────────────────────────────
+   FORM ELEMENTS
+   ───────────────────────────────────────────────────────────── */
+input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not(.sr-only):not(.hidden),
 select,
 textarea {
   display: block;
   width: 100%;
   min-height: 48px;
-  border: 1px solid #a6b9ad;
-  background: white;
+  border: 1px solid var(--border-warm);
+  background: var(--surface);
   border-radius: 8px;
   padding: 8px 12px;
   font: inherit;
-  color: var(--color-foreground);
+  color: var(--text-primary);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not(.sr-only):not(.hidden):focus,
+select:focus,
+textarea:focus {
+  border-color: var(--craft-green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--craft-green) 20%, transparent);
+  outline: none;
 }
 input[type='checkbox'] {
   width: 20px;
   height: 20px;
-  accent-color: var(--color-primary);
+  accent-color: var(--craft-green);
 }
 label,
 .field-label {
@@ -85,16 +246,76 @@ label,
   font-weight: 600;
   margin-bottom: 8px;
 }
-label:has(input[type='checkbox']) {
+label:has(input[type='checkbox']),
+.checkbox-card {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 44px;
+  gap: 10px;
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-warm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
   font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 0;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+label:has(input[type='checkbox']):hover,
+.checkbox-card:hover {
+  border-color: var(--craft-green);
+  background: color-mix(in srgb, var(--craft-green) 6%, var(--surface));
+}
+label:has(input[type='checkbox']):has(input:checked),
+.checkbox-card:has(input:checked) {
+  border-color: var(--craft-green);
+  background: color-mix(in srgb, var(--craft-green) 12%, var(--surface));
+  color: var(--craft-green);
+  font-weight: 600;
 }
 textarea {
   min-height: 96px;
 }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  user-select: none;
+  border: 1px solid transparent;
+}
+.btn-primary {
+  background: var(--craft-green);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--craft-green-hover);
+}
+.btn-primary:active {
+  transform: scale(0.98);
+}
+.btn-sm {
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+/* ─────────────────────────────────────────────────────────────
+   LAYOUT COMPONENTS
+   ───────────────────────────────────────────────────────────── */
 .sidebar {
   display: none;
 }
@@ -105,35 +326,49 @@ textarea {
   justify-content: space-between;
   gap: 16px;
   padding: 16px 24px;
-  background: white;
-  border-bottom: 1px solid var(--color-border);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-warm);
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease;
 }
 .main-content {
   max-width: 1440px;
+  width: 100%;
   margin: auto;
   padding: 24px 16px 32px;
+  min-width: 0;
 }
 .mobile-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
   z-index: 40;
   display: flex;
   gap: 4px;
-  border-top: 1px solid var(--color-border);
-  background: white;
+  border-top: 1px solid var(--border-warm);
+  background: var(--surface);
   padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease;
 }
 .desktop-content {
   padding-bottom: 96px;
+  min-width: 0;
+  max-width: 100%;
 }
 .skip-link {
   position: fixed;
   top: 8px;
   left: 8px;
   z-index: 100;
-  background: white;
+  background: var(--surface);
+  color: var(--text-primary);
   padding: 12px;
   transform: translateY(-200%);
 }
@@ -155,9 +390,12 @@ textarea {
 }
 .page-heading p {
   margin-top: 8px;
-  color: var(--color-muted-foreground);
+  color: var(--text-secondary);
   font-size: 14px;
 }
+/* ─────────────────────────────────────────────────────────────
+   DECORATIVE – Weave / Mat pattern
+   ───────────────────────────────────────────────────────────── */
 .weave {
   background-color: #dce8da;
   background-image:
@@ -165,6 +403,15 @@ textarea {
     repeating-linear-gradient(90deg, transparent, transparent 12px, #c0d3bb 12px, #c0d3bb 16px);
   background-size: 32px 32px;
 }
+.dark .weave {
+  background-color: #152318;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 12px, #1c2f1f 12px, #1c2f1f 16px),
+    repeating-linear-gradient(90deg, transparent, transparent 12px, #1a2c1d 12px, #1a2c1d 16px);
+}
+/* ─────────────────────────────────────────────────────────────
+   DESKTOP OVERRIDES
+   ───────────────────────────────────────────────────────────── */
 @media (min-width: 1024px) {
   .sidebar {
     position: fixed;
@@ -173,9 +420,12 @@ textarea {
     display: flex;
     width: 264px;
     flex-direction: column;
-    background: white;
-    border-right: 1px solid var(--color-border);
+    background: var(--surface);
+    border-right: 1px solid var(--border-warm);
     padding: 32px 24px;
+    transition:
+      background-color 220ms ease,
+      border-color 220ms ease;
   }
   .desktop-content {
     margin-left: 264px;
@@ -192,6 +442,9 @@ textarea {
     min-height: 80px;
   }
 }
+/* ─────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   ───────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -199,5 +452,397 @@ textarea {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+/* Shared compact controls, with the same surfaces in both themes. */
+.picker-trigger {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-warm);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+  user-select: none;
+}
+.picker-trigger::-webkit-details-marker {
+  display: none;
+}
+.field-picker[open] {
+  z-index: 40;
+}
+.field-picker[open] > .picker-trigger {
+  border-color: var(--craft-green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--craft-green) 18%, transparent);
+}
+.field-picker > .picker-trigger svg {
+  transition: transform 200ms ease;
+}
+.field-picker[open] > .picker-trigger svg {
+  transform: rotate(180deg);
+}
+.picker-menu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  width: 100%;
+  min-width: 180px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 6px;
+  gap: 2px;
+  border: 1px solid var(--border-warm);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow:
+    0 12px 32px -4px rgba(0, 0, 0, 0.35),
+    0 4px 12px -2px rgba(0, 0, 0, 0.15);
+}
+.picker-option {
+  display: flex;
+  min-height: 42px;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.picker-option:hover {
+  background: var(--craft-green-soft);
+  color: var(--text-primary);
+}
+.picker-option[aria-pressed='true'] {
+  background: var(--craft-green-soft);
+  color: var(--craft-green);
+  font-weight: 600;
+}
+select option {
+  background-color: var(--surface);
+  color: var(--text-primary);
+}
+.calendar-panel {
+  width: min(304px, calc(100vw - 48px));
+  max-height: none;
+  overflow: visible;
+  padding: 12px;
+}
+.calendar-panel .picker-trigger {
+  font-size: 12px;
+  min-height: 44px;
+  padding: 4px 8px;
+}
+.calendar-panel .picker-menu {
+  min-width: 80px;
+}
+.calendar-nav {
+  display: flex;
+  width: 32px;
+  min-height: 44px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.calendar-day {
+  min-height: 40px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.calendar-day:disabled,
+.calendar-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.calendar-day[aria-current='date']:not([aria-pressed='true']) {
+  box-shadow: inset 0 0 0 1px var(--craft-green);
+}
+dialog .field-picker > .picker-menu {
+  position: relative;
+  top: auto;
+  margin-top: 4px;
+}
+form > div:nth-child(2) .calendar-panel {
+  left: auto;
+  right: 0;
+}
+@media (max-width: 639px) {
+  .app-header {
+    min-height: 64px;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .app-header a > span:first-child {
+    width: 36px;
+    height: 36px;
+  }
+  .main-content {
+    padding: 16px 12px 24px;
+    min-width: 0;
+  }
+  .desktop-content {
+    padding-bottom: 80px;
+    min-width: 0;
+  }
+  .mobile-nav {
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom));
+  }
+  .page-heading {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .page-heading h1 {
+    font-size: 24px;
+    line-height: 32px;
+  }
+  .page-heading p {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+  .main-content h2 {
+    font-size: 18px;
+    line-height: 28px;
+  }
+  .main-content .text-3xl {
+    font-size: 24px;
+    line-height: 32px;
+  }
+  label,
+  .field-label {
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+  input:not([type='checkbox']):not([class*='text-2xl']):not([class*='text-3xl']):not(
+      [class*='text-4xl']
+    ):not([class*='!text-']),
+  textarea {
+    min-height: 44px;
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+  .responsive-table thead {
+    display: none;
+  }
+  .responsive-table,
+  .responsive-table tbody {
+    display: block;
+  }
+  .responsive-table tbody > tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 8px;
+    gap: 4px 8px;
+  }
+  .responsive-table td {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 4px;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+  .responsive-table td[data-label]::before {
+    content: attr(data-label);
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  .responsive-table td[colspan] {
+    grid-column: 1 / -1;
+    padding: 16px;
+  }
+  .responsive-table td:last-child {
+    grid-column: 1 / -1;
+  }
+  .responsive-table td:last-child > button {
+    width: auto;
+  }
+  dialog form > .rounded-xl {
+    padding: 12px;
+  }
+}
+/* Keep short statuses and row actions legible in narrow tables. */
+.responsive-table td:has([data-slot='badge']),
+.responsive-table td:has(> button) {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.responsive-table td > button {
+  gap: 8px;
+  padding-inline: 12px;
+}
+.responsive-table td > button svg {
+  flex-shrink: 0;
+}
+/* Compact sm inputs and buttons on mobile; desktop sizing stays comfortable */
+@media (max-width: 639px) {
+  input:not([type='checkbox']):not([class*='text-2xl']):not([class*='text-3xl']):not(
+      [class*='text-4xl']
+    ):not([class*='!text-']),
+  textarea,
+  select,
+  .picker-trigger {
+    min-height: 38px !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    padding-right: 10px !important;
+    padding-left: 10px;
+    font-size: 13px !important;
+    line-height: 20px !important;
+    border-radius: 8px !important;
+  }
+  button:not(.fixed):not([class*='p-0']):not([class*='size-']):not([class*='h-']):not(
+      [class*='!h-']
+    ) {
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+  label:has(input[type='checkbox']),
+  .checkbox-card {
+    min-height: 38px !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
+  }
+  label,
+  .field-label {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  textarea {
+    min-height: 72px !important;
+  }
+  .calendar-panel .picker-trigger {
+    min-height: 34px !important;
+  }
+}
+/* Role-aware primary action floats above the mobile navigation. */
+.mobile-nav {
+  align-items: flex-end;
+  overflow: visible;
+}
+.mobile-nav > a:not(.mobile-primary) {
+  min-width: 0;
+  flex-basis: 0;
+}
+.mobile-primary {
+  position: relative;
+  display: flex;
+  flex: 1 0 64px;
+  max-width: 96px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+.mobile-primary-circle {
+  display: flex;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  margin-top: -24px;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--surface);
+  border-radius: 9999px;
+  background: var(--craft-green);
+  color: white;
+  box-shadow: 0 4px 12px #00000026;
+}
+.mobile-primary:hover .mobile-primary-circle {
+  background: var(--craft-green-hover);
+}
+.mobile-primary-label {
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+.mobile-primary:active .mobile-primary-circle {
+  transform: scale(0.96);
+}
+@media (min-width: 1024px) {
+  .mobile-primary {
+    display: none;
+  }
+}
+@media (max-width: 1023px) {
+  .mobile-nav:has(.mobile-primary) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 72px minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .mobile-primary {
+    grid-column: 3;
+    grid-row: 1;
+    width: 72px;
+    max-width: none;
+  }
+  .mobile-nav:has(.mobile-primary):has(> a:nth-child(4):last-child) > a:last-child {
+    grid-column: 4 / span 2;
+  }
+}
+
+/* Toast Notifications (Sonner) */
+[data-sonner-toaster] {
+  --normal-bg: var(--surface);
+  --normal-border: var(--border-warm);
+  --normal-text: var(--text-primary);
+  font-family: var(--font-sans);
+}
+[data-sonner-toast] {
+  border-radius: 14px !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.15),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+[data-sonner-toast] [data-icon] {
+  margin-right: 10px !important;
+}
+[data-sonner-toast] [data-close-button] {
+  left: auto !important;
+  right: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border-warm) !important;
+  color: var(--text-secondary) !important;
+}
+
+@media (max-width: 639px) {
+  .responsive-table td[data-empty='true'] {
+    display: none;
   }
 }

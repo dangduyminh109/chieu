@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-store"><title>Làm mới ứng dụng</title></head>
+<body style="font:16px/1.6 system-ui;padding:24px"><h1>Làm mới Chiếu</h1><p id="status" role="status">Đang bỏ bộ nhớ đệm mã cũ. Thông tin đăng nhập được giữ nguyên.</p><a href="/" id="back">Mở lại ứng dụng</a>
+<script>
+(async function () {
+ try {
+  if ('serviceWorker' in navigator) {
+   const registrations = await navigator.serviceWorker.getRegistrations();
+   await Promise.all(registrations.filter(function (registration) {
+    const worker = registration.active || registration.waiting || registration.installing;
+    return worker && new URL(worker.scriptURL).origin === location.origin && new URL(worker.scriptURL).pathname === '/sw.js';
+   }).map(function (registration) { return registration.unregister(); }));
+  }
+  if ('caches' in window) {
+   const keys = await caches.keys();
+   await Promise.all(keys.filter(function (key) { return key.startsWith('xuong-chieu-'); }).map(function (key) { return caches.delete(key); }));
+  }
+  document.getElementById('status').textContent = 'Đã bỏ bộ nhớ đệm mã cũ. Bấm Mở lại ứng dụng.';
+ } catch (error) { document.getElementById('status').textContent = 'Chưa làm mới được. Hãy đóng các tab của ứng dụng rồi mở lại.'; }
+})();
+</script></body></html>

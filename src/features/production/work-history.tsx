@@ -1,9 +1,13 @@
+import { Dialog } from '@/components/ui/dialog';
+import { ActionForm } from '@/components/ui/action-form';
+import { overrideWorkRate } from '@/features/pricing/quote-actions';
 import { Card } from '@/components/ui/card';
-import { EmptyState } from '@/components/ui/states';
-import { displayDate, money, number, statusLabel } from '@/lib/utils';
-import type { MatType, Stage, WorkLog } from '@/types/domain';
 import { Badge } from '@/components/ui/badge';
 import { TextWithBadge } from '@/components/ui/text-with-badge';
+import { DataTable, type TableColumn } from '@/components/ui/data-table';
+import { displayDate, money, number, statusLabel } from '@/lib/utils';
+import type { MatType, Stage, WorkLog } from '@/types/domain';
+
 export function WorkHistory({
   logs,
   mats,
@@ -15,57 +19,107 @@ export function WorkHistory({
   stages: Stage[];
   names?: Record<string, string>;
 }) {
+  const columns: TableColumn<WorkLog>[] = [
+    { key: 'date', header: 'Ngày làm', cell: (r) => displayDate(r.work_date) },
+    ...(names
+      ? [
+          {
+            key: 'worker',
+            header: 'Thành viên',
+            cell: (r: WorkLog) => names[r.worker_id] ?? 'Thành viên',
+          },
+        ]
+      : []),
+    {
+      key: 'mat',
+      header: 'Loại chiếu',
+      cell: (r) =>
+        mats.find((m) => m.id === (r.stock_mat_type_id ?? r.mat_type_id))?.name ?? 'Loại chiếu',
+    },
+    {
+      key: 'stage',
+      header: 'Công đoạn',
+      cell: (r) => stages.find((s) => s.id === r.stage_id)?.name,
+    },
+    {
+      key: 'quantity',
+      header: 'Số chiếu',
+      className: 'text-right',
+      cell: (r) => number(r.quantity),
+    },
+    { key: 'rate', header: 'Đơn giá', className: 'text-right', cell: (r) => money(r.unit_rate) },
+    {
+      key: 'amount',
+      header: 'Tiền công',
+      className: 'text-right',
+      cell: (r) => <strong>{money(r.total_amount)}</strong>,
+    },
+    {
+      key: 'status',
+      header: 'Trạng thái',
+      cell: (r) => (
+        <Badge
+          variant={
+            r.status === 'SUBMITTED'
+              ? 'warning'
+              : r.status === 'REJECTED'
+                ? 'destructive'
+                : r.status === 'APPROVED' || r.status === 'LOCKED'
+                  ? 'success'
+                  : 'secondary'
+          }
+        >
+          {statusLabel[r.status]}
+        </Badge>
+      ),
+    },
+  ];
+  if (names)
+    columns.push({
+      key: 'rate-edit',
+      header: 'Điều chỉnh',
+      cell: (r) => (
+        <Dialog title="Điều chỉnh tiền công" trigger="Sửa đơn giá" variant="outline">
+          <ActionForm action={overrideWorkRate}>
+            <input type="hidden" name="id" value={r.id} />
+            <input type="hidden" name="version" value={r.version} />
+            <div>
+              <label htmlFor={`rate-${r.id}`}>Đơn giá công (đ/chiếc)</label>
+              <input
+                id={`rate-${r.id}`}
+                name="rate"
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={1000000000}
+                defaultValue={r.unit_rate}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor={`reason-${r.id}`}>Lý do</label>
+              <input id={`reason-${r.id}`} name="reason" minLength={5} maxLength={1000} required />
+            </div>
+          </ActionForm>
+        </Dialog>
+      ),
+    });
   return (
     <Card className="min-w-0">
       <h2 className="text-xl font-semibold">
         <TextWithBadge
-          text={names ? 'Nhật ký của xưởng' : 'Lịch sử công của bạn'}
+          text={names ? 'Nhật ký chung' : 'Lịch sử sản lượng của bạn'}
           badge={`${logs.length} bản ghi`}
         />
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">Tiền công được giữ theo đơn giá lúc gửi.</p>
-      {logs.length === 0 ? (
-        <EmptyState
-          title="Chưa có công trong khoảng này"
-          description="Công đã gửi sẽ xuất hiện ở đây. Bạn có thể chọn khoảng ngày khác để xem lại."
-        />
-      ) : (
-        <div className="mt-6 divide-y divide-border">
-          {logs.map((log) => (
-            <article key={log.id} className="flex flex-wrap justify-between gap-4 py-4">
-              <div className="min-w-0">
-                <p className="font-semibold">
-                  {mats.find((m) => m.id === log.mat_type_id)?.name ?? 'Loại chiếu'}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {stages.find((s) => s.id === log.stage_id)?.name} · {displayDate(log.work_date)}
-                </p>
-                {names && <p className="mt-1 text-sm">{names[log.worker_id] ?? 'Thành viên'}</p>}
-                <p className="mt-2 text-sm">
-                  {number(log.quantity)} chiếu × {money(log.unit_rate)}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold">{money(log.total_amount)}</p>
-                <Badge
-                  className="mt-2"
-                  variant={
-                    log.status === 'SUBMITTED'
-                      ? 'warning'
-                      : log.status === 'REJECTED'
-                        ? 'destructive'
-                        : log.status === 'APPROVED' || log.status === 'LOCKED'
-                          ? 'success'
-                          : 'secondary'
-                  }
-                >
-                  {statusLabel[log.status]}
-                </Badge>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
+      <DataTable
+        caption={names ? 'Nhật ký chung' : 'Lịch sử sản lượng của bạn'}
+        rows={logs}
+        columns={columns}
+        rowKey={(r) => r.id}
+        emptyMessage="Chưa có bản ghi trong khoảng này. Nhập số lượng hoặc chọn khoảng ngày khác."
+      />
     </Card>
   );
 }

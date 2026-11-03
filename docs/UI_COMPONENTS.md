@@ -59,3 +59,24 @@ localStorage, session tokens, authorization state, work records, or financial da
 The database remains authoritative. Always validate a remembered selection against
 the current server-provided active catalog and assigned skills before reuse.
 Do not add a global cache of roles or wages to this store.
+
+## Dialog and data table
+
+Use Dialog for creation/editing forms. It uses native modal focus containment,
+Escape handling and focus restoration. ActionForm closes its containing dialog
+only after a successful action, preserving validation errors on failure.
+Production entry uses the same close context after successful submission.
+DataTable is a generic Server Component with typed columns, stable row keys,
+caption, scoped headers, empty state and a keyboard-focusable horizontal region.
+Use it for catalog, pricing, members and production history; keep queries,
+permissions and pagination in the calling server page. No deletion controls exist.
+
+## Compact mobile controls
+
+Select and DatePicker render themed dropdown choices and a Vietnamese calendar,
+including month/year controls and date bounds. Server forms submit hidden field
+values; React Hook Form uses Controller with onValueChange. Pickers dismiss on
+outside pointer input or Escape and retain form reset behavior. No browser-native
+select/date popup is used in pricing or production. Tables stack into compact
+labeled records on phones and retain desktop columns. Touch controls remain at
+least 44px high; inputs keep 16px text to avoid iOS focus zoom.

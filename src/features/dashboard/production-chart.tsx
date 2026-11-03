@@ -1,5 +1,6 @@
 'use client';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+
 export function ProductionChart({ data }: { data: { name: string; quantity: number }[] }) {
   return (
     <div
@@ -9,22 +10,33 @@ export function ProductionChart({ data }: { data: { name: string; quantity: numb
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ left: 0, right: 8, top: 8, bottom: 8 }}>
-          <CartesianGrid vertical={false} stroke="#dae3dc" />
-          <XAxis dataKey="name" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+          <CartesianGrid vertical={false} stroke="var(--border-warm, #cfcbc0)" strokeDasharray="3 3" />
+          <XAxis
+            dataKey="name"
+            tick={{ fontSize: 12, fill: 'var(--text-secondary, #4a5a50)' }}
+            axisLine={false}
+            tickLine={false}
+          />
           <YAxis
             allowDecimals={false}
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 12, fill: 'var(--text-secondary, #4a5a50)' }}
             axisLine={false}
             tickLine={false}
             width={40}
           />
           <Tooltip
-            formatter={(value) => [`${value} chiếu`, 'Số lượng xử lý']}
-            contentStyle={{ borderRadius: 12, borderColor: '#dae3dc', fontSize: 14 }}
+            formatter={(value) => [`${value} chiếc`, 'Số lượng xử lý']}
+            contentStyle={{
+              borderRadius: 12,
+              background: 'var(--surface, #ffffff)',
+              borderColor: 'var(--border-warm, #cfcbc0)',
+              color: 'var(--text-primary, #26332b)',
+              fontSize: 14,
+            }}
           />
           <Bar
             dataKey="quantity"
-            fill="#216149"
+            fill="var(--craft-green, #4db88c)"
             radius={[6, 6, 0, 0]}
             maxBarSize={48}
             isAnimationActive={false}

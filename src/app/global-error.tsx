@@ -5,7 +5,7 @@ export default function GlobalError({ reset }: { reset: () => void }) {
       <body>
         <main style={{ padding: 32, fontFamily: 'sans-serif' }}>
           <h1>Chưa thể mở ứng dụng</h1>
-          <p>Kiểm tra kết nối rồi thử lại. Nếu vẫn gặp lỗi, liên hệ người quản lý xưởng.</p>
+          <p>Kiểm tra kết nối rồi thử lại. Nếu vẫn gặp lỗi, liên hệ người quản lý.</p>
           <button onClick={reset}>Thử lại</button>
         </main>
       </body>

@@ -13,13 +13,13 @@ export const getSession = cache(async () => {
   } = await db.auth.getUser();
   if (error || !user) return null;
   const [profile, roles, skills] = await Promise.all([
-    db.from('profiles').select('*').eq('id', user.id).single(),
+    db.from('profiles').select('*').eq('id', user.id).maybeSingle(),
     db.from('user_roles').select('role').eq('user_id', user.id),
     db.from('worker_skills').select('stage_id').eq('user_id', user.id),
   ]);
   if (profile.error || roles.error || skills.error)
     throw new Error('Không thể tải tài khoản. Vui lòng thử lại.');
-  if (!profile.data.active) return null;
+  if (!profile.data?.active) return null;
   return {
     userId: user.id,
     profile: profile.data as Profile,

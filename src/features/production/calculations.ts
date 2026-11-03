@@ -10,7 +10,7 @@ export function calculateWage(quantity: number, unitRate: number) {
 }
 export function selectLaborRate(
   rates: LaborRate[],
-  matId: string,
+  matId: string | null,
   stageId: string,
   workerId: string,
   date: string,
@@ -18,7 +18,7 @@ export function selectLaborRate(
   return rates
     .filter(
       (r) =>
-        r.mat_type_id === matId &&
+        (r.mat_type_id ?? null) === matId &&
         r.stage_id === stageId &&
         r.effective_from <= date &&
         (r.worker_id === null || r.worker_id === workerId),
@@ -26,7 +26,9 @@ export function selectLaborRate(
     .sort(
       (a, b) =>
         Number(b.worker_id !== null) - Number(a.worker_id !== null) ||
-        b.effective_from.localeCompare(a.effective_from),
+        b.effective_from.localeCompare(a.effective_from) ||
+        (b.created_at ?? '').localeCompare(a.created_at ?? '') ||
+        b.id.localeCompare(a.id),
     )[0];
 }
 export function hasZeroWage(roles: Role[], enabled: boolean) {
