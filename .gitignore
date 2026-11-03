@@ -11,3 +11,4 @@ test-results/
 .wrangler/
 .dev.vars*
 .vercel/
+.netlify/

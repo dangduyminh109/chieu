@@ -1,10 +1,27 @@
-# Cloudflare staging
+# Staging hosting
+
+## Netlify Free migration
+
+The staging application is being moved to Netlify Free after Cloudflare returned
+Error 1102 (resource limits) while rendering the Next.js application.
+Cloudflare remains the DNS provider; Supabase remains the database and Auth provider.
+
+- Configuration: `netlify.toml`, Next.js runtime `@netlify/plugin-nextjs`.
+- Deployment: `pnpm deploy:staging` after authorizing Netlify and linking the site.
+- Use the Free plan; do not enable paid trials, auto-recharge or paid upgrades.
+- Supply the four runtime environment variables listed below to the Netlify site.
+- Never deploy `SUPABASE_DB_URL`, `.env.local`, or Cloudflare credentials.
+- Verify the new Netlify URL before changing the staging CNAME.
+- Disable the old Cloudflare custom-domain binding when cutting over to Netlify.
+- Free hosting has monthly usage limits; reaching the limit can pause the site.
+
+## Previous Cloudflare deployment (fallback only)
 
 - Worker: `chieu-staging`
 - Domain: `https://staging.chieudinhyen.store`
 - Database and Auth: existing Supabase project; no data reset on deployment.
 - Build: `pnpm build:cloudflare`
-- Deploy: `pnpm deploy:staging` after `pnpm exec wrangler login`.
+- Deploy: `pnpm deploy:cloudflare` after `pnpm exec wrangler login`.
 
 The Worker requires these runtime secrets, configured separately from Git:
 
